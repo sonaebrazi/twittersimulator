@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twitter Service UI</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="js/scripts.js" defer></script>
+    <style>
+        /* Simple styling for better readability */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 10px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #ffffff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #333;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input[type="text"],
+        input[type="password"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .post {
+            background-color: #e9ecef;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Register</h2>
+    <label for="registerUsername">Username:</label>
+    <input type="text" id="registerUsername" placeholder="Enter your username" required />
+    <label for="registerPassword">Password:</label>
+    <input type="password" id="registerPassword" placeholder="Enter your password" required />
+    <button id="registerButton">Register</button> <!-- Added ID -->
+</div>
+
+<div class="container">
+    <h2>Login</h2>
+    <label for="loginUsername">Username:</label>
+    <input type="text" id="loginUsername" placeholder="Enter your username" required />
+    <label for="loginPassword">Password:</label>
+    <input type="password" id="loginPassword" placeholder="Enter your password" required />
+    <button id="loginButton">Login</button> <!-- Added ID -->
+</div>
+
+<!-- Hidden input for the auth token -->
+<input type="text" id="category-token" name="token" required hidden>
+
+
+<div class="container">
+    <h2>Create Post</h2>
+    <label for="createPostToken">Token</label>
+    <input type="text" id="createPostToken" name="createToken" required  />
+    <label for="postContent">content</label>
+    <textarea id="postContent" placeholder="Write your post here..."></textarea>
+    <button id="createPostButton">Create Post</button> <!-- Added ID -->
+</div>
+
+<div class="container">
+    <h2>Your Posts</h2>
+    <label for="showPostToken">Token</label>
+    <input type="text" id="showPostToken" name="showToken" required  />
+    <button id="viewPostsButton">View Posts</button> <!-- Added ID -->
+    <div id="postsList">
+        <!-- Posts will appear here -->
+    </div>
+</div>
+
+</body>
+</html>
