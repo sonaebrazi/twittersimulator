@@ -1,17 +1,16 @@
 package com.example.twittersimulator.service;
 
-import com.example.twittersimulator.dto.PostRequestDto;
-import com.example.twittersimulator.dto.PostResponseDto;
-import com.example.twittersimulator.dto.UserPassDto;
+import com.example.twittersimulator.dto.*;
+import com.example.twittersimulator.entity.Comments;
 import com.example.twittersimulator.entity.Posts;
 import com.example.twittersimulator.entity.Token;
 import com.example.twittersimulator.entity.Users;
+import com.example.twittersimulator.repository.CommentRepo;
 import com.example.twittersimulator.repository.PostRepo;
 import com.example.twittersimulator.repository.TokenRepo;
 import com.example.twittersimulator.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -29,6 +28,9 @@ public class TwitterService {
 
     @Autowired
     private PostRepo postRepo;
+
+    @Autowired
+    private CommentRepo commentRepo;
 
     //register or save a new user
     public void saveUser(UserPassDto request) {
@@ -77,14 +79,60 @@ public class TwitterService {
         if(tokenEntity == null){
             return List.of();
         } else {
+            String userName=tokenEntity.getUser().getUserName();
             List<Posts> posts= postRepo.findByUser(tokenEntity.getUser());
             List<PostResponseDto> response = new ArrayList<>();
             for(Posts post : posts){
-                PostResponseDto dto=new PostResponseDto(post.getContent(),post.getCreatedAt());
+                PostResponseDto dto=new PostResponseDto(post.getId(), post.getContent(),post.getCreatedAt(),userName);
                 response.add(dto);
             }
             return response;
         }
+    }
+
+    public CommentResponseDto addComment(Long postId, String comment, String token) {
+        //retrieve the post by id
+        Posts post=postRepo.findById(postId).orElseThrow(() -> new RuntimeException("post not found"));
+
+        //retrieve the token and related user
+        Token foundToken=tokenRepo.findByToken(token);
+        if(token==null){
+            throw new RuntimeException("invalid token");
+        }
+
+        Users user=foundToken.getUser();
+
+        //create a new comment
+        Comments newComment=new Comments();
+        newComment.setComment(comment);
+        newComment.setCreatedAt(LocalDateTime.now());
+        newComment.setPost(post);
+        newComment.setUser(user);
+
+        //save the comment in database
+        Comments savedComment=commentRepo.save(newComment);
+
+        // Create and populate the response DTO
+        CommentResponseDto response= new CommentResponseDto();
+        response.setId(savedComment.getId());
+        response.setComment(savedComment.getComment());
+        response.setCreatedAt(savedComment.getCreatedAt());
+
+        // Constructing user DTO to return
+        UserResponseDto userResponse= new UserResponseDto();
+        userResponse.setId(user.getId());
+        userResponse.setUserName(user.getUserName());
+        response.setUser(userResponse);
+
+        //constructing post DTO to return
+        PostResponseDto postResponse= new PostResponseDto();
+        postResponse.setId(post.getId());
+        postResponse.setContent(post.getContent());
+        postResponse.setCreatedAt(post.getCreatedAt());
+        postResponse.setUserName(post.getUser().getUserName());
+        response.setPost(postResponse);
+
+        return response;
     }
 
 }
