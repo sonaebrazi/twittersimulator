@@ -1,10 +1,7 @@
 package com.example.twittersimulator.controller;
 
-import com.example.twittersimulator.dto.PostRequestDto;
-import com.example.twittersimulator.dto.PostResponseDto;
-import com.example.twittersimulator.dto.UserPassDto;
-import com.example.twittersimulator.entity.Posts;
-import com.example.twittersimulator.entity.Users;
+import com.example.twittersimulator.dto.*;
+import com.example.twittersimulator.entity.Comments;
 import com.example.twittersimulator.service.TwitterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -51,17 +48,28 @@ public class TwitterController {
     //create a new post for a user
     @PostMapping("posts")
     public ResponseEntity<Map<String,String>> createPost(
-            @RequestHeader("Authorization") String authorizationHeader, @RequestBody PostRequestDto request){
+            @RequestHeader("Authorization") String authorizationHeader, @RequestBody PostRequestDto request) {
 
-        String token = authorizationHeader.replace("Bearer ","");
-        Boolean postCreated = service.createPost(token,request);
-        Map<String,String> response=new HashMap<>();
-        if(postCreated){
-            response.put("message","post created successfully");
+        String token = authorizationHeader.replace("Bearer ", "");
+        Boolean postCreated = service.createPost(token, request);
+        Map<String, String> response = new HashMap<>();
+        if (postCreated) {
+            response.put("message", "post created successfully");
             return ResponseEntity.status(201).body(response);
-        } else{
-            response.put("error","invalid token");
+        } else {
+            response.put("error", "invalid token");
             return ResponseEntity.status(401).body(response);
         }
     }
+
+    //Add comment to a post
+    @PostMapping("comment/{postId}")
+    public ResponseEntity<CommentResponseDto> addComment(@PathVariable Long postId, @RequestBody CommentRequestDto request,
+                               @RequestHeader("Authorization") String authorizationHeader){
+        String token=authorizationHeader.replace("Bearer ","");
+        CommentResponseDto commentResponse= service.addComment(postId,request.getText(),token);
+        return ResponseEntity.status(201).body(commentResponse);
+    }
+
+
 }

@@ -6,27 +6,30 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
-
 import java.time.LocalDateTime;
+import java.util.List;
 
-@Entity
 @Data
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
-public class Token {
+public class Comments {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id",nullable = false)
-    @JsonBackReference
-    private Users user;
+    private long id;
 
     @Column(nullable = false)
-    private String token;
+    private String comment;
 
-    @Column(name = "datetime",nullable = false)
+    @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id",nullable = false)
+    @JsonBackReference
+    private Posts post;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private Users user;
 }
